@@ -13,26 +13,38 @@ defmodule ChirpWeb.PostLive.PostComponent do
       </div>
       <div class="flex flex-row justify-between mt-2">
         <div class="column">
-          <i class="far fa-heart"></i> {@post.likes_count}
+          <a href="#" phx-click="like" phx-target={@myself} class="column">
+            <i class="far fa-heart"></i> {@post.likes_count}
+          </a>
         </div>
         <div class="column">
-          <i class="far fa-retweet"></i> {@post.reposts_count}
+          <a href="#" phx-click="repost" phx-target={@myself} class="column">
+            <i class="far fa-star"></i> {@post.reposts_count}
+          </a>
         </div>
         <div class="flex flex-row gap-4">
           <div class="column">
-            <i class="far fa-edit"></i>
-            <.link patch={~p"/posts/#{@post.id}/edit"}>Edit</.link>
+            <.link patch={~p"/posts/#{@post.id}/edit"}><i class="far fa-edit"></i> Edit</.link>
           </div>
 
           <div class="column">
-            <i class="far fa-trash-alt"></i>
             <.link phx-click="delete" phx-value-id={@post.id} href="#" data-confirm="Are you sure?">
-              Delete
+              <i class="far fa-trash-alt"></i> Delete
             </.link>
           </div>
         </div>
       </div>
     </div>
     """
+  end
+
+  def handle_event("like", _, socket) do
+    Chirp.Timeline.increment_likes(socket.assigns.post)
+    {:noreply, socket}
+  end
+
+  def handle_event("repost", _, socket) do
+    Chirp.Timeline.increment_reposts(socket.assigns.post)
+    {:noreply, socket}
   end
 end

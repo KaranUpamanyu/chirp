@@ -109,8 +109,25 @@ defmodule Chirp.Timeline do
   end
 
   defp broadcast({:error, _reason} = error, _event), do: error
+
   defp broadcast({:ok, post}, event) do
     Phoenix.PubSub.broadcast(Chirp.PubSub, "posts", {event, post})
     {:ok, post}
+  end
+
+  def increment_likes(%Post{id: id}) do
+    {1, [post]} =
+      from(p in Post, where: p.id == ^id, select: p)
+      |> Repo.update_all(inc: [likes_count: 1])
+
+    broadcast({:ok, post}, :post_updated)
+  end
+
+  def increment_reposts(%Post{id: id}) do
+    {1, [post]} =
+      from(p in Post, where: p.id == ^id, select: p)
+      |> Repo.update_all(inc: [reposts_count: 1])
+
+    broadcast({:ok, post}, :post_updated)
   end
 end
