@@ -7,7 +7,7 @@
   </:actions>
 </.header>
 
-<div id="posts" class="flex flex-col mt-[2rem] gap-4">
+<div phx-update="prepend" id="posts" class="flex flex-col mt-[2rem] gap-4">
   <%= for {id, post} <- @streams.posts do %>
     <.live_component module={ChirpWeb.PostLive.PostComponent} id={id} post={post} />
   <% end %>
